@@ -8,5 +8,7 @@
 <style>
   body{
     background-color: fuchsia;
+    padding: 0;
+    margin: 0;
   }
 </style>
