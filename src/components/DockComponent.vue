@@ -11,6 +11,11 @@ const applications = ref([
     icon: 'src/assets/finder.png',
   },
   {
+    name: 'Lunch Pad',
+    icon: 'src/assets/lunchpad.png',
+    isLaunchpad: true
+  },
+  {
     name: 'Terminal',
     icon: 'src/assets/terminal.png',
   },
@@ -57,7 +62,8 @@ defineExpose({
         class="dock-item"
         :class="{
           'is-open': openApps.has(application.name),
-          'is-bouncing': bounceApps.has(application.name)
+          'is-bouncing': bounceApps.has(application.name),
+          'launchpad': application.isLaunchpad
         }"
         @click="openApplication(application)"
       >
@@ -93,10 +99,9 @@ defineExpose({
 }
 
 .dock-item {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
   transition: all 0.2s ease-out;
 }
 
@@ -107,23 +112,24 @@ defineExpose({
   transition: all 0.2s ease-out;
 }
 
-.dock-item.is-open {
-  transform: translateY(-4px);
-}
-
 .indicator {
+  position: absolute;
+  bottom: -4px; /* Remonté de -8px à -4px */
+  left: 50%;
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.8);
-}
-
-.dock-container:hover .dock-item {
-  transform: translateY(0px);
+  background-color: #000;
+  transform: translateX(-50%); /* Séparé du transform de hover */
+  transform-origin: center; /* Empêche l'indicateur de suivre le scale */
 }
 
 .dock-item:hover {
   transform: scale(1.5) translateY(-10px) !important;
+}
+
+.dock-item:hover .indicator {
+  transform: translateX(-50%) scale(0.66); /* Contrebalance le zoom de l'icône */
 }
 
 .dock-item:hover ~ .dock-item {
@@ -135,9 +141,11 @@ defineExpose({
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(-4px); }
+  0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
 }
+
+
 
 .is-bouncing {
   animation: bounce 0.5s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
